@@ -10,7 +10,7 @@
   <div id="reader" style="width:300px;"></div>
   <script>
     function sendData(qrData) {
-      fetch('https://script.google.com/macros/s/AKfycby2DWbPTrNXnAkvIY1S2wJOOOx5unt67XFwuXJ2EIgu2PVyYOn5SpWisPCK33jZyrzS/exec', { // Palitan ito ng URL ng Web App
+      fetch('https://script.google.com/macros/s/AKfycbw7tegf6yNy29fjeCbXYUk3rH4wkiOs3LWwYB2N_zHqp4Al_tjuLQpkSgLM6yedjv0D/exec', {
         method: 'POST',
         body: JSON.stringify({ qrData: qrData }),
         headers: {
@@ -24,8 +24,11 @@
 
     function onScanSuccess(decodedText) {
       console.log("Scanned: " + decodedText);
-      sendData(decodedText); // I-log ang QR data
-      html5QrcodeScanner.clear(); // Optional: itigil ang scanner
+      sendData(decodedText);
+      // Optional: Restart scanner after delay to continue scanning
+      setTimeout(() => {
+        html5QrcodeScanner.render(onScanSuccess);
+      }, 2000); // 2 seconds delay before next scan
     }
 
     var html5QrcodeScanner = new Html5QrcodeScanner(
