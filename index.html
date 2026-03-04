@@ -1,36 +1,33 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>QR Scanner to Google Sheets</title>
+  <title>QR Scanner Log & List</title>
   <script src="https://unpkg.com/html5-qrcode"></script>
 </head>
 <body>
   <h2>Scan QR Code</h2>
+  <p>Please scan the QR code to log attendance.</p>
   <div id="reader" style="width:300px;"></div>
   <script>
-    // Function na magpapadala ng QR data sa backend
     function sendData(qrData) {
-      fetch('https://script.google.com/macros/s/AKfycbwwhn0rXezP0CB7pPIROLkGpzS6lV7ut-0wczN2MKjBM1B5GgPZknA_JBslvQbcdZPO/exec', { // Palitan ito kung iba ang URL
+      fetch('https://script.google.com/macros/s/AKfycbys1aWx9Ya0_UtmfUp9Lj4sERbaUD6KLFQn5jO6NWLtraTH-Sp0EGoq6oP8BYpcoucB/exec', { // Palitan ito
         method: 'POST',
         body: JSON.stringify({ qrData: qrData }),
         headers: {
           'Content-Type': 'application/json'
         }
       })
-      .then(response => response.text())
-      .then(data => alert(data))
-      .catch(error => console.error('Error:', error));
+      .then(res => res.text())
+      .then(res => alert(res))
+      .catch(err => console.error(err));
     }
 
-    // Function kapag na-scan ang QR code
     function onScanSuccess(decodedText) {
-      console.log(`Detected QR: ${decodedText}`);
-      sendData(decodedText); // I-send sa backend
-      // Optional: i-stop ang scanner pagkatapos magscan
-      html5QrcodeScanner.clear();
+      console.log("Scanned: " + decodedText);
+      sendData(decodedText); // I-log ang QR data
+      html5QrcodeScanner.clear(); // Optional: itigil ang scanner
     }
 
-    // Initialize ang QR scanner
     var html5QrcodeScanner = new Html5QrcodeScanner(
       "reader", { fps: 10, qrbox: 250 }
     );
