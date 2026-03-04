@@ -1,35 +1,47 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>My Custom QR Scanner</title>
+  <title>Own Camera QR Scanner</title>
   <script src="https://unpkg.com/html5-qrcode"></script>
 </head>
 <body>
-  <h2>My Custom QR Scanner</h2>
-  <p>Scan QR code to process data.</p>
-  <div id="qr-reader" style="width: 400px;"></div>
+  <h2>Own Camera QR Scanner</h2>
+  <p>Gamitin ang camera para mag-scan ng iba't ibang QR codes.</p>
+  <div id="qr-reader" style="width: 400px; height: 300px; border: 1px solid black;"></div>
+  <button id="start-scan">Start Scanner</button>
+  <button id="stop-scan">Stop Scanner</button>
   <script>
-    // Function to handle successful scan
-    function onScanSuccess(decodedText, decodedResult) {
-      alert("Scanned Data: " + decodedText);
-      // Dito mo pwedeng i-send ang data sa server o i-process
-      // Halimbawa:
-      // fetch('YOUR_WEB_APP_URL', { method: 'POST', body: JSON.stringify({ qrData: decodedText }) });
-    }
+    let scanner;
 
-    // Initialize the scanner
-    const html5QrCode = new Html5Qrcode("qr-reader");
-    const qrCodeSuccessCallback = onScanSuccess;
-    const config = { fps: 10, qrbox: 250 };
-
-    // Start scanning gamit ang rear camera
-    html5QrCode.start(
-      { facingMode: "environment" },
-      config,
-      qrCodeSuccessCallback
-    ).catch(err => {
-      console.error("Hindi makapagsimula ang scanner.", err);
+    document.getElementById('start-scan').addEventListener('click', () => {
+      if (scanner) {
+        scanner.clear().then(() => {
+          startScanner();
+        }).catch(err => console.error(err));
+      } else {
+        startScanner();
+      }
     });
+
+    document.getElementById('stop-scan').addEventListener('click', () => {
+      if (scanner) {
+        scanner.clear();
+      }
+    });
+
+    function startScanner() {
+      scanner = new Html5Qrcode("qr-reader");
+      scanner.start(
+        { facingMode: "environment" }, // Rear camera
+        { fps: 10, qrbox: 250 },
+        decodedText => {
+          alert("Scanned QR Code: " + decodedText);
+          // Dito mo pwedeng i-process ang QR code data, tulad ng pag-send sa server
+        }
+      ).catch(err => {
+        console.error("Error starting scanner:", err);
+      });
+    }
   </script>
 </body>
 </html>
