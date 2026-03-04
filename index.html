@@ -10,7 +10,7 @@
   <script>
     // Function na magpapadala ng QR data sa backend
     function sendData(qrData) {
-      fetch('https://script.google.com/macros/s/AKfycbxG0MFkIv8gbIBKhvfZNA3dB-ZzrS4EZ7EBQaJV2eYH4RJcSZzwFgK87RCeipW5CKPF', { // Palitan ito kung iba ang URL
+      fetch('https://script.google.com/macros/s/AKfycbxkX8ig2l6q_2lqCxPtooFf3G-ampzI_GdU-fLtd7AXNIga8QIsjMIQadw76H7lMUBr/exec', { // Palitan kung iba ang URL
         method: 'POST',
         body: JSON.stringify({ qrData: qrData }),
         headers: {
