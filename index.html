@@ -1,40 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>QR Scanner Log & List</title>
+  <title>My Custom QR Scanner</title>
   <script src="https://unpkg.com/html5-qrcode"></script>
 </head>
 <body>
-  <h2>Scan QR Code</h2>
-  <p>Please scan the QR code to log attendance.</p>
-  <div id="reader" style="width:300px;"></div>
+  <h2>My Custom QR Scanner</h2>
+  <p>Scan QR code to process data.</p>
+  <div id="qr-reader" style="width: 400px;"></div>
   <script>
-    function sendData(qrData) {
-      fetch('https://script.google.com/macros/s/AKfycbxpWGYl82Zi45aZj2JNfDp8Fs7zK-YWYWR6WsPZuYDYL5dzMAAeHz6cZ2Uz1oRY7TTn/exec', {
-        method: 'POST',
-        body: JSON.stringify({ qrData: qrData }),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-      .then(res => res.text())
-      .then(res => alert(res))
-      .catch(err => console.error(err));
+    // Function to handle successful scan
+    function onScanSuccess(decodedText, decodedResult) {
+      alert("Scanned Data: " + decodedText);
+      // Dito mo pwedeng i-send ang data sa server o i-process
+      // Halimbawa:
+      // fetch('YOUR_WEB_APP_URL', { method: 'POST', body: JSON.stringify({ qrData: decodedText }) });
     }
 
-    function onScanSuccess(decodedText) {
-      console.log("Scanned: " + decodedText);
-      sendData(decodedText);
-      // Optional: Restart scanner after delay to continue scanning
-      setTimeout(() => {
-        html5QrcodeScanner.render(onScanSuccess);
-      }, 2000); // 2 seconds delay before next scan
-    }
+    // Initialize the scanner
+    const html5QrCode = new Html5Qrcode("qr-reader");
+    const qrCodeSuccessCallback = onScanSuccess;
+    const config = { fps: 10, qrbox: 250 };
 
-    var html5QrcodeScanner = new Html5QrcodeScanner(
-      "reader", { fps: 10, qrbox: 250 }
-    );
-    html5QrcodeScanner.render(onScanSuccess);
+    // Start scanning gamit ang rear camera
+    html5QrCode.start(
+      { facingMode: "environment" },
+      config,
+      qrCodeSuccessCallback
+    ).catch(err => {
+      console.error("Hindi makapagsimula ang scanner.", err);
+    });
   </script>
 </body>
 </html>
