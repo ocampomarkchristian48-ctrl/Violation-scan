@@ -1,47 +1,86 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-  <title>Own Camera QR Scanner</title>
-  <script src="https://unpkg.com/html5-qrcode"></script>
+<title>Student QR Scanner</title>
+<script src="https://unpkg.com/html5-qrcode"></script>
 </head>
+
 <body>
-  <h2>Own Camera QR Scanner</h2>
-  <p>Gamitin ang camera para mag-scan ng iba't ibang QR codes.</p>
-  <div id="qr-reader" style="width: 400px; height: 300px; border: 1px solid black;"></div>
-  <button id="start-scan">Start Scanner</button>
-  <button id="stop-scan">Stop Scanner</button>
-  <script>
-    let scanner;
 
-    document.getElementById('start-scan').addEventListener('click', () => {
-      if (scanner) {
-        scanner.clear().then(() => {
-          startScanner();
-        }).catch(err => console.error(err));
-      } else {
-        startScanner();
-      }
-    });
+<h2>Scan Student QR</h2>
 
-    document.getElementById('stop-scan').addEventListener('click', () => {
-      if (scanner) {
-        scanner.clear();
-      }
-    });
+<div id="reader" style="width:300px"></div>
 
-    function startScanner() {
-      scanner = new Html5Qrcode("qr-reader");
-      scanner.start(
-        { facingMode: "environment" }, // Rear camera
-        { fps: 10, qrbox: 250 },
-        decodedText => {
-          alert("Scanned QR Code: " + decodedText);
-          // Dito mo pwedeng i-process ang QR code data, tulad ng pag-send sa server
-        }
-      ).catch(err => {
-        console.error("Error starting scanner:", err);
-      });
-    }
-  </script>
+<div id="studentInfo"></div>
+
+<select id="violation">
+<option value="Late">Late</option>
+<option value="No ID">No ID</option>
+<option value="Uniform">Uniform</option>
+</select>
+
+<button onclick="saveViolation()">Save</button>
+
+<script>
+
+var webApp="https://script.google.com/macros/s/AKfycbwza6QMpLMVYp_HrRKuLQS7iHglOGoCJ8Z0g0dAfo0p-AXdrclR0alwQWoCyPKIxIey/exec";
+
+var currentID="";
+var currentName="";
+
+function onScanSuccess(decodedText){
+
+currentID = decodedText;
+
+fetch(webApp+"?action=getStudent&id="+decodedText)
+
+.then(res=>res.text())
+
+.then(data=>{
+
+if(data=="NOT_FOUND"){
+document.getElementById("studentInfo").innerHTML="Student not found";
+}else{
+
+var student = JSON.parse(data);
+
+currentName = student.name;
+
+document.getElementById("studentInfo").innerHTML=
+
+"Name: "+student.name+"<br>"+
+"ID: "+student.id+"<br>"+
+"Section: "+student.section;
+
+}
+
+});
+
+}
+
+function saveViolation(){
+
+var violation=document.getElementById("violation").value;
+
+fetch(webApp+
+"?action=saveViolation"+
+"&id="+currentID+
+"&name="+currentName+
+"&violation="+violation)
+
+.then(res=>res.text())
+.then(data=>alert(data));
+
+}
+
+let scanner = new Html5QrcodeScanner(
+"reader",
+{fps:10,qrbox:250});
+
+scanner.render(onScanSuccess);
+
+</script>
+
 </body>
 </html>
